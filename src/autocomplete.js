@@ -152,7 +152,9 @@ angular.module('google.places', [])
                     function select() {
                         var prediction;
 
-                        prediction = $scope.predictions[$scope.selected];
+
+
+                      prediction = $scope.predictions[$scope.selected];
                         if (!prediction) return;
 
                         if (prediction.is_custom) {
@@ -164,15 +166,16 @@ angular.module('google.places', [])
                                 });
                             });
                         } else {
-                            placesService.getDetails({ placeId: prediction.place_id }, function (place, status) {
+                            var request = angular.extend({ placeId: prediction.place_id }, $scope.options);
+                            placesService.getDetails(request, function (place, status) {
                                 if (status == google.maps.places.PlacesServiceStatus.OK) {
-                                    $scope.$apply(function () {
-                                        $scope.model = place;
-                                        $scope.$emit('g-places-autocomplete:select', place);
-                                        $timeout(function () {
-                                            controller.$viewChangeListeners.forEach(function (fn) { fn(); });
-                                        });
+                                $scope.$apply(function () {
+                                    $scope.model = place;
+                                    $scope.$emit('g-places-autocomplete:select', place);
+                                    $timeout(function () {
+                                        controller.$viewChangeListeners.forEach(function (fn) { fn(); });
                                     });
+                                });
                                 }
                             });
                         }
